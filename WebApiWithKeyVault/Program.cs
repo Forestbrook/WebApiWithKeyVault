@@ -1,24 +1,21 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using Forestbrook.WebApiWithKeyVault;
 
-namespace Forestbrook.WebApiWithKeyVault
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+var builder = WebApplication.CreateBuilder(args);
+builder.AddAzureKeyVault();
 
-        // REMARK: Don't change the name or signature of the CreateHostBuilder method.
-        // The EF Core tools expect to find a CreateHostBuilder method that configures the host without running the app. 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder
-                        .ConfigureAppConfigurationWithKeyVault()
-                        .UseStartup<Startup>();
-                });
-    }
-}
+// Add services to the container:
+builder.Services.AddSingleton<BlobStorageRepository>();
+builder.Services.AddScoped<DatabaseRepository>();
+builder.Services.AddControllers();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();

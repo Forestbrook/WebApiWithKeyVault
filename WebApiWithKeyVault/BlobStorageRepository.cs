@@ -1,14 +1,12 @@
-﻿using System;
+﻿namespace Forestbrook.WebApiWithKeyVault;
 
-namespace Forestbrook.WebApiWithKeyVault
+public class BlobStorageRepository
 {
-    public class BlobStorageRepository
+    public BlobStorageRepository(IConfiguration configuration)
     {
-        public BlobStorageRepository(string storageConnectionString)
-        {
-            if (string.IsNullOrEmpty(storageConnectionString)) throw new ArgumentNullException(nameof(storageConnectionString));
-            // TODO: Implement your repository using the Nuget Package Azure.Storage.Blobs
-            //_blobServiceClient = new BlobServiceClient(storageConnectionString);
-        }
+        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+        var storageConnectionString = configuration.GetValue<string>(ConfigurationKeys.StorageConnectionString);
+        // TODO: Implement your repository using the Nuget Package Azure.Storage.Blobs
+        //_blobServiceClient = new BlobServiceClient(storageConnectionString);
     }
 }
