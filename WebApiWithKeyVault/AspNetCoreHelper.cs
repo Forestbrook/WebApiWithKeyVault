@@ -1,5 +1,8 @@
 ﻿using Azure.Core;
 using Azure.Identity;
+//using Microsoft.EntityFrameworkCore;
+//using Microsoft.EntityFrameworkCore.Diagnostics;
+using System.Data.SqlClient;
 
 namespace Forestbrook.WebApiWithKeyVault;
 
@@ -13,6 +16,44 @@ public static class AspNetCoreHelper
         var keyVaultUri = builder.Configuration.CreateKeyVaultUri();
         var keyVaultCredential = builder.Configuration.CreateKeyVaultCredential();
         builder.Configuration.AddAzureKeyVault(keyVaultUri, keyVaultCredential);
+    }
+
+//    public static void AddDbContext<TContext>(this WebApplicationBuilder builder) where TContext : DbContext
+//    {
+//        // TODO: Add nuget package Microsoft.EntityFrameworkCore.SqlServer
+//        // Registers TContext as a scoped service (created once per request):
+//        // TODO: See for EnableRetryOnFailure(): Connection Resiliency https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency
+//        builder.Services.AddDbContext<TContext>(BuildContextOptions);
+
+//        void BuildContextOptions(DbContextOptionsBuilder contextOptionsBuilder)
+//        {
+//            contextOptionsBuilder.ConfigureWarnings(w =>
+//            {
+//#if DEBUG
+//                w.Ignore(CoreEventId.SensitiveDataLoggingEnabledWarning);
+//#endif
+//                // Ignore warnings caused by QuerySplittingBehavior.SplitQuery:
+//                w.Ignore(CoreEventId.RowLimitingOperationWithoutOrderByWarning);
+//            });
+
+//            var connectionString = builder.Configuration.CreateSqlConnectionString();
+//            contextOptionsBuilder.UseSqlServer(connectionString, providerOptions =>
+//            {
+//                providerOptions.EnableRetryOnFailure();
+//                providerOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+//            });
+
+//            if (builder.Configuration.GetValue<bool>(ConfigurationKeys.EnableSqlParameterLogging))
+//                contextOptionsBuilder.EnableSensitiveDataLogging();
+//        }
+//    }
+
+    public static string CreateSqlConnectionString(this IConfiguration configuration)
+    {
+        var dbUserId = configuration.GetValue<string>(ConfigurationKeys.DatabaseUserId);
+        var dbPassword = configuration.GetValue<string>(ConfigurationKeys.DatabasePassword);
+        var builder = new SqlConnectionStringBuilder(configuration.GetConnectionString(ConfigurationKeys.DatabaseConnectionString)) { UserID = dbUserId, Password = dbPassword };
+        return builder.ConnectionString;
     }
 
     private static TokenCredential CreateKeyVaultCredential(this IConfiguration configuration)

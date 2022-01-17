@@ -4,6 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddAzureKeyVault();
 
 // Add services to the container:
+//builder.AddDbContext<--your-DbContext-->();
 builder.Services.AddSingleton<BlobStorageRepository>();
 builder.Services.AddScoped<DatabaseRepository>();
 builder.Services.AddControllers();
